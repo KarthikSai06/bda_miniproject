@@ -1,0 +1,15 @@
+{
+  "cluster_id": "CID-TURBOFAN-PROD-01",
+  "namenode_host": "namenode.hadoop.cluster",
+  "datanodes": [
+    "datanode-01.rack-a",
+    "datanode-02.rack-a",
+    "datanode-03.rack-b"
+  ],
+  "block_size_mb": 128,
+  "replication_factor": 3,
+  "total_blocks_allocated": 4,
+  "total_records_ingested": 8,
+  "created_at": "2026-10-14T06:27:48.734293",
+  "last_ingestion_timestamp": "2026-10-14T06:31:33.596231+00:00"
+}

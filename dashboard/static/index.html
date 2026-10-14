@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turbomachinery Predictive Maintenance Lakehouse | DSCE CSE Big Data Project #58</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Enterprise Light Palette */
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-hover: #e2e8f0;
+      
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      --border-dark: #94a3b8;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      
+      --brand-primary: #1e40af;
+      --brand-primary-hover: #1d4ed8;
+      --brand-primary-subtle: #eff6ff;
+      --brand-primary-border: #bfdbfe;
+      
+      /* Semantic Status Indicators */
+      --status-normal-bg: #f0fdf4;
+      --status-normal-text: #166534;
+      --status-normal-border: #bbf7d0;
+      --status-normal-bar: #16a34a;
+      
+      --status-warning-bg: #fffbeb;
+      --status-warning-text: #92400e;
+      --status-warning-border: #fde68a;
+      --status-warning-bar: #d97706;
+      
+      --status-critical-bg: #fef2f2;
+      --status-critical-text: #991b1b;
+      --status-critical-border: #fecaca;
+      --status-critical-bar: #dc2626;
+
+      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Enterprise Application Top Bar */
+    .top-header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.6rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .brand-logo-container {
+      width: 38px;
+      height: 38px;
+      background-color: var(--brand-primary);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .brand-logo-container svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .brand-titles h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-titles p {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .system-telemetry-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.7rem;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      font-size: 0.74rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--status-normal-bar);
+    }
+
+    .status-dot.pulse {
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.42rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+      border: 1px solid var(--border-medium);
+      background-color: var(--bg-surface);
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: var(--bg-subtle);
+      border-color: var(--border-dark);
+    }
+
+    .btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .btn-primary {
+      background-color: var(--brand-primary);
+      border-color: var(--brand-primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--brand-primary-hover);
+      border-color: var(--brand-primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-surface);
+      border-color: var(--border-medium);
+      color: var(--text-primary);
+    }
+
+    .btn-warning-action {
+      background-color: #fff1f2;
+      border-color: #fecdd3;
+      color: #be123c;
+    }
+
+    .btn-warning-action:hover {
+      background-color: #ffe4e6;
+      border-color: #fda4af;
+    }
+
+    /* Sub-header Navigation Tabs */
+    .nav-tabs-bar {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0 1.75rem;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .nav-tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-tab-btn.active {
+      color: var(--brand-primary);
+      border-bottom-color: var(--brand-primary);
+    }
+
+    .nav-tab-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Main Content Container */
+    main {
+      max-width: 1650px;
+      margin: 1.25rem auto;
+      padding: 0 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* High-Level Metric Tiles */
+    .metrics-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.9rem;
+    }
+
+    @media (max-width: 1400px) {
+      .metrics-summary-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .metrics-summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 0.9rem 1rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .metric-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .metric-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .metric-icon {
+      color: var(--text-dim);
+    }
+
+    .metric-icon svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .metric-val {
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .metric-sub {
+      font-size: 0.71rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Panel Component */
+    .panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 0.75rem 1.1rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fafbfc;
+    }
+
+    .panel-header h2 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-header h2 svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .panel-body {
+      padding: 1.1rem;
+    }
+
+    /* Tab Section Controls */
+    .tab-content-section {
+      display: none;
+    }
+
+    .tab-content-section.active {
+      display: block;
+    }
+
+    /* Layout for Primary Fleet Telemetry Tab */
+    .scada-layout-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1350px) {
+      .scada-layout-grid {
+        grid-template-columns: 300px 1fr;
+      }
+      .scada-layout-grid .side-column {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .scada-layout-grid {
+        grid-template-columns: 1fr;
+      }
+      .scada-layout-grid .side-column {
+        grid-column: span 1;
+      }
+    }
+
+    /* Fleet Asset Directory Cards */
+    .asset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      max-height: 650px;
+      overflow-y: auto;
+    }
+
+    .asset-card {
+      border: 1px solid var(--border-light);
+      border-radius: 5px;
+      padding: 0.75rem 0.85rem;
+      background-color: var(--bg-surface);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .asset-card:hover {
+      background-color: var(--bg-subtle);
+      border-color: var(--border-medium);
+    }
+
+    .asset-card.active {
+      border-color: var(--brand-primary);
+      background-color: var(--brand-primary-subtle);
+    }
+
+    .asset-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .asset-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .status-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-HEALTHY {
+      background-color: var(--status-normal-bg);
+      color: var(--status-normal-text);
+      border: 1px solid var(--status-normal-border);
+    }
+
+    .badge-WARNING {
+      background-color: var(--status-warning-bg);
+      color: var(--status-warning-text);
+      border: 1px solid var(--status-warning-border);
+    }
+
+    .badge-CRITICAL {
+      background-color: var(--status-critical-bg);
+      color: var(--status-critical-text);
+      border: 1px solid var(--status-critical-border);
+    }
+
+    .asset-metrics-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.73rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .progress-track {
+      height: 4px;
+      background-color: var(--bg-subtle);
+      border-radius: 2px;
+      margin-top: 0.45rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* Diagnostics Center Column */
+    .diagnostic-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .kpi-callout-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 5px;
+      padding: 0.85rem;
+    }
+
+    .callout-box {
+      text-align: center;
+    }
+
+    .callout-label {
+      font-size: 0.69rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .callout-val {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      margin-top: 0.15rem;
+    }
+
+    /* Stripchart Container */
+    .chart-container-card {
+      border: 1px solid var(--border-light);
+      border-radius: 5px;
+      padding: 0.8rem;
+      background-color: var(--bg-surface);
+    }
+
+    .chart-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .chart-heading {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .chart-legend-txt {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 125px !important;
+      display: block;
+    }
+
+    /* Live Telemetry Table */
+    .sensor-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+      font-family: var(--font-mono);
+      margin-top: 0.5rem;
+    }
+
+    .sensor-data-table th {
+      background-color: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid var(--border-light);
+      text-transform: uppercase;
+      font-size: 0.68rem;
+    }
+
+    .sensor-data-table td {
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .sensor-data-table tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    /* Work Order Queue (Right Column) */
+    .wo-queue {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      max-height: 650px;
+      overflow-y: auto;
+    }
+
+    .wo-card {
+      border: 1px solid var(--border-light);
+      border-left: 4px solid var(--brand-primary);
+      border-radius: 5px;
+      padding: 0.8rem;
+      background-color: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .wo-card.CRITICAL { border-left-color: var(--status-critical-bar); }
+    .wo-card.HIGH { border-left-color: var(--status-warning-bar); }
+
+    .wo-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wo-code {
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--brand-primary);
+    }
+
+    .wo-equipment-name {
+      font-size: 0.81rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .wo-details-row {
+      display: flex;
+      gap: 0.85rem;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .wo-diagnostics-box {
+      background-color: var(--bg-subtle);
+      border-radius: 4px;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.71rem;
+      color: var(--text-secondary);
+      list-style-position: inside;
+      line-height: 1.4;
+    }
+
+    .wo-diagnostics-box li {
+      margin-bottom: 0.15rem;
+    }
+
+    .wo-footer-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.45rem;
+      margin-top: 0.2rem;
+    }
+
+    /* Standard Enterprise Table */
+    .enterprise-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .enterprise-table th {
+      background-color: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.85rem;
+      border-bottom: 1px solid var(--border-medium);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .enterprise-table td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .enterprise-table tr:hover td {
+      background-color: #fafbfc;
+    }
+
+    /* HDFS Lakehouse Architecture Card & Grid */
+    .lakehouse-info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 1024px) {
+      .lakehouse-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .pipeline-diagram {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      overflow-x: auto;
+      margin-bottom: 1.25rem;
+    }
+
+    .pipeline-step {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-medium);
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      min-width: 190px;
+      flex-shrink: 0;
+    }
+
+    .pipeline-step-num {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--brand-primary);
+      text-transform: uppercase;
+    }
+
+    .pipeline-step-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0.2rem 0;
+    }
+
+    .pipeline-step-desc {
+      font-size: 0.71rem;
+      color: var(--text-muted);
+    }
+
+    .pipeline-arrow {
+      color: var(--border-dark);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* Notification Toast (Non-intrusive enterprise feedback) */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .toast-msg {
+      pointer-events: auto;
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      min-width: 300px;
+      max-width: 480px;
+      animation: toastSlideIn 0.2s ease-out;
+    }
+
+    .toast-msg.success { border-left: 4px solid var(--status-normal-bar); }
+    .toast-msg.warning { border-left: 4px solid var(--status-warning-bar); }
+    .toast-msg.error { border-left: 4px solid var(--status-critical-bar); }
+
+    @keyframes toastSlideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Enterprise Navigation Header -->
+  <header class="top-header">
+    <div class="brand-section">
+      <div class="brand-logo-container">
+        <!-- Clean turbine/machinery SVG -->
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <h1>Turbomachinery Predictive Maintenance Lakehouse</h1>
+        <p>Dayananda Sagar College of Engineering • Dept of Computer Science & Engineering • Problem #58</p>
+      </div>
+    </div>
+
+    <!-- System Telemetry Status -->
+    <div class="system-telemetry-bar">
+      <div class="status-chip">
+        <span class="status-dot pulse" id="kafka-dot"></span>
+        <span>Kafka: <strong id="kafka-status-txt">Connected (Streaming)</strong></span>
+      </div>
+      <div class="status-chip">
+        <span class="status-dot" id="hdfs-dot"></span>
+        <span>HDFS: <strong id="hdfs-status-txt">Replication 3x (Normal)</strong></span>
+      </div>
+      <button class="btn btn-warning-action" onclick="injectFaultAnomaly()">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        Simulate Thermal Fault
+      </button>
+      <button class="btn btn-secondary" onclick="triggerParquetCompaction()">
+        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        Compact HDFS Parquet
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs-bar">
+    <button class="nav-tab-btn active" onclick="switchNavTab('scada-view', this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      Fleet Telemetry & Diagnostics
+    </button>
+    <button class="nav-tab-btn" onclick="switchNavTab('work-orders-view', this)">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      Maintenance Work Orders (<span id="tab-wo-count">0</span>)
+    </button>
+    <button class="nav-tab-btn" onclick="switchNavTab('hdfs-view', this)">
+      <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+      Hadoop HDFS Lakehouse Storage
+    </button>
+    <button class="nav-tab-btn" onclick="switchNavTab('ml-view', this)">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      Big Data ML Pipeline & Verification
+    </button>
+  </nav>
+
+  <!-- Main Container -->
+  <main>
+    
+    <!-- Top KPI Overview Strip -->
+    <div class="metrics-summary-grid">
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span class="metric-title">Monitored Fleet</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+        </div>
+        <div class="metric-val" id="stat-total-engines">5</div>
+        <div class="metric-sub">Active turbofan telemetry streams</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span class="metric-title">Optimal Health</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        </div>
+        <div class="metric-val" style="color: var(--status-normal-bar);" id="stat-healthy-engines">--</div>
+        <div class="metric-sub">&gt; 50 operating cycles RUL</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span class="metric-title">Advisory Advisory</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>
+        </div>
+        <div class="metric-val" style="color: var(--status-warning-bar);" id="stat-warning-engines">--</div>
+        <div class="metric-sub">25 to 50 cycles remaining</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span class="metric-title">Critical Attention</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>
+        </div>
+        <div class="metric-val" style="color: var(--status-critical-bar);" id="stat-critical-engines">--</div>
+        <div class="metric-sub">&le; 24 cycles to failure limit</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span class="metric-title">HDFS Ingested Records</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></span>
+        </div>
+        <div class="metric-val" style="color: var(--brand-primary);" id="stat-hdfs-records">--</div>
+        <div class="metric-sub">Partitioned /lakehouse/turbofan/</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span class="metric-title">Active Work Orders</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
+        </div>
+        <div class="metric-val" style="color: var(--status-critical-bar);" id="stat-wo-active">--</div>
+        <div class="metric-sub">Triggered at P &ge; 0.70 threshold</div>
+      </div>
+    </div>
+
+    <!-- TAB 1: FLEET SCADA & TELEMETRY VIEW -->
+    <div id="tab-scada-view" class="tab-content-section active">
+      <div class="scada-layout-grid">
+        
+        <!-- Left: Monitored Assets -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2>
+              <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              Fleet Directory
+            </h2>
+            <span style="font-size: 0.69rem; font-family: var(--font-mono); color: var(--text-muted);">SELECT ASSET</span>
+          </div>
+          <div class="panel-body">
+            <div class="asset-list" id="fleet-container">
+              <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Connecting to Kafka stream...</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Center: Live Stripcharts & Sensor Diagnostics -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2 id="current-engine-title">
+              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              Turbofan Unit #1 Diagnostics
+            </h2>
+            <span class="status-badge badge-HEALTHY" id="selected-status-label">NORMAL</span>
+          </div>
+          <div class="panel-body diagnostic-stack">
+            
+            <!-- 3 Primary Metric Callouts -->
+            <div class="kpi-callout-strip">
+              <div class="callout-box">
+                <div class="callout-label">24-Hr Failure Probability</div>
+                <div class="callout-val" id="disp-risk-val" style="color: var(--status-normal-bar);">0.0%</div>
+              </div>
+              <div class="callout-box">
+                <div class="callout-label">Predicted RUL</div>
+                <div class="callout-val" id="disp-rul-val">--</div>
+              </div>
+              <div class="callout-box">
+                <div class="callout-label">Current Operating Cycle</div>
+                <div class="callout-val" id="disp-cycle-val">--</div>
+              </div>
+            </div>
+
+            <!-- Chart 1: Failure Probability Trend -->
+            <div class="chart-container-card">
+              <div class="chart-top-bar">
+                <span class="chart-heading">Failure Risk Probability Horizon (Threshold: 70.0%)</span>
+                <span class="chart-legend-txt" id="chart-legend-risk">Current: 0.0% | Alarm Limit: 70.0%</span>
+              </div>
+              <canvas id="chart-risk"></canvas>
+            </div>
+
+            <!-- Chart 2: T30 HPC Outlet Temperature -->
+            <div class="chart-container-card">
+              <div class="chart-top-bar">
+                <span class="chart-heading">T30 — High-Pressure Compressor Outlet Temperature (K)</span>
+                <span class="chart-legend-txt" id="chart-legend-temp">Baseline: 1585 K | Alarm: 1600 K</span>
+              </div>
+              <canvas id="chart-temp"></canvas>
+            </div>
+
+            <!-- Chart 3: P30 HPC Outlet Pressure & Core Speed Nc -->
+            <div class="chart-container-card">
+              <div class="chart-top-bar">
+                <span class="chart-heading">P30 — High-Pressure Compressor Pressure (psia) & Core Speed Nc (rpm)</span>
+                <span class="chart-legend-txt" id="chart-legend-pressure">Nominal: ~553 psia</span>
+              </div>
+              <canvas id="chart-pressure"></canvas>
+            </div>
+
+            <!-- Sensor Telemetry Data Grid -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-size: 0.73rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase;">
+                  Key Degradation Sensor Matrix
+                </span>
+                <span style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted);">
+                  C-MAPSS FD001 Subsystems
+                </span>
+              </div>
+              <table class="sensor-data-table">
+                <thead>
+                  <tr>
+                    <th>Sensor ID</th>
+                    <th>Subsystem Parameter</th>
+                    <th>Current Value</th>
+                    <th>Nominal Baseline</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody id="sensor-table-body">
+                  <tr>
+                    <td>T30 (Sensor 3)</td>
+                    <td>HPC Outlet Temperature</td>
+                    <td id="tbl-t30">--</td>
+                    <td>1580 - 1590 K</td>
+                    <td id="tbl-t30-status"><span class="status-badge badge-HEALTHY">NORMAL</span></td>
+                  </tr>
+                  <tr>
+                    <td>T50 (Sensor 4)</td>
+                    <td>LPT Outlet Temperature</td>
+                    <td id="tbl-t50">--</td>
+                    <td>1400 - 1410 K</td>
+                    <td id="tbl-t50-status"><span class="status-badge badge-HEALTHY">NORMAL</span></td>
+                  </tr>
+                  <tr>
+                    <td>P30 (Sensor 7)</td>
+                    <td>HPC Outlet Total Pressure</td>
+                    <td id="tbl-p30">--</td>
+                    <td>553 - 555 psia</td>
+                    <td id="tbl-p30-status"><span class="status-badge badge-HEALTHY">NORMAL</span></td>
+                  </tr>
+                  <tr>
+                    <td>Nc (Sensor 9)</td>
+                    <td>Core Engine Rotational Speed</td>
+                    <td id="tbl-nc">--</td>
+                    <td>9050 - 9070 rpm</td>
+                    <td id="tbl-nc-status"><span class="status-badge badge-HEALTHY">NORMAL</span></td>
+                  </tr>
+                  <tr>
+                    <td>Ps30 (Sensor 11)</td>
+                    <td>HPC Outlet Static Pressure</td>
+                    <td id="tbl-ps30">--</td>
+                    <td>47.2 - 47.6 psia</td>
+                    <td id="tbl-ps30-status"><span class="status-badge badge-HEALTHY">NORMAL</span></td>
+                  </tr>
+                  <tr>
+                    <td>BPR (Sensor 15)</td>
+                    <td>Turbofan Bypass Ratio</td>
+                    <td id="tbl-bpr">--</td>
+                    <td>8.40 - 8.45</td>
+                    <td id="tbl-bpr-status"><span class="status-badge badge-HEALTHY">NORMAL</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Right: Real-Time Maintenance Work Orders -->
+        <section class="panel side-column">
+          <div class="panel-header">
+            <h2>
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              Work Order Dispatch
+            </h2>
+            <span class="status-badge badge-CRITICAL" id="badge-wo-count">0 ACTIVE</span>
+          </div>
+          <div class="panel-body">
+            <div class="wo-queue" id="work-orders-container">
+              <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                No critical failure work orders active. All equipment within safe operational parameters.
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: FULL MAINTENANCE WORK ORDERS TABLE VIEW -->
+    <div id="tab-work-orders-view" class="tab-content-section">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            Maintenance Work Order Tickets
+          </h2>
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">
+            AUTOMATICALLY TRIGGERED AT P &ge; 0.70 RISK THRESHOLD
+          </span>
+        </div>
+        <div class="panel-body">
+          <table class="enterprise-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Asset Unit</th>
+                <th>Trigger Cycle</th>
+                <th>Failure Probability</th>
+                <th>Predicted RUL</th>
+                <th>Primary Degradation Indicators</th>
+                <th>Assigned Technician</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="full-wo-table-body">
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                  Loading work order queue...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: HADOOP HDFS LAKEHOUSE STORAGE VIEW -->
+    <div id="tab-hdfs-view" class="tab-content-section">
+      
+      <!-- HDFS High-Level Metadata Cards -->
+      <div class="lakehouse-info-grid">
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-title">HDFS Cluster ID</span>
+          </div>
+          <div class="metric-val" style="font-size: 1.25rem;" id="hdfs-cluster-id">CID-TURBOFAN-PROD-01</div>
+          <div class="metric-sub">Active NameNode: 127.0.0.1:9000</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-title">Active DataNodes</span>
+          </div>
+          <div class="metric-val" style="color: var(--status-normal-bar);" id="hdfs-datanodes">3 Active Nodes</div>
+          <div class="metric-sub">Replication Factor: 3x</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-title">Total Ingested Records</span>
+          </div>
+          <div class="metric-val" style="color: var(--brand-primary);" id="hdfs-records-ingested">--</div>
+          <div class="metric-sub">Date Partitioned Directory</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-header">
+            <span class="metric-title">Physical Storage Size</span>
+          </div>
+          <div class="metric-val" id="hdfs-storage-size">--</div>
+          <div class="metric-sub">Snappy Columnar Parquet</div>
+        </div>
+      </div>
+
+      <!-- End-to-End Big Data Architecture Flow -->
+      <div class="panel" style="margin-bottom: 1.25rem;">
+        <div class="panel-header">
+          <h2>
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Big Data Lakehouse Pipeline Architecture
+          </h2>
+          <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-muted);">
+            INGESTION &rarr; HDFS PERSISTENCE &rarr; PARQUET COMPACTION &rarr; STREAMING INFERENCE
+          </span>
+        </div>
+        <div class="panel-body">
+          <div class="pipeline-diagram">
+            <div class="pipeline-step">
+              <div class="pipeline-step-num">Step 1 • Ingestion</div>
+              <div class="pipeline-step-title">Apache Kafka Broker</div>
+              <div class="pipeline-step-desc">
+                High-frequency JSON sensor telemetry stream (T30, P30, Nc, Ps30, BPR) partitioned by Asset ID.
+              </div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-num">Step 2 • Lakehouse Storage</div>
+              <div class="pipeline-step-title">Hadoop HDFS Partitioning</div>
+              <div class="pipeline-step-desc">
+                Streaming micro-batches persisted with 3x replication in <code>/lakehouse/year=YYYY/month=MM/day=DD/</code>.
+              </div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-num">Step 3 • Batch Compaction</div>
+              <div class="pipeline-step-title">Snappy Parquet Compaction</div>
+              <div class="pipeline-step-desc">
+                Consolidates small streaming files into columnar Snappy Parquet for optimal query speeds and storage efficiency.
+              </div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-num">Step 4 • Feature Pipeline</div>
+              <div class="pipeline-step-title">73 Big Data Features</div>
+              <div class="pipeline-step-desc">
+                Sliding-window moving averages (5 &amp; 15 cycles), volatility standard deviations, and rate-of-change deltas.
+              </div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-num">Step 5 • Real-time Inference</div>
+              <div class="pipeline-step-title">ML Classifier &amp; Dispatch</div>
+              <div class="pipeline-step-desc">
+                Evaluates failure risk within 24h. Triggers work order dispatch when risk exceeds 70%.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HDFS Storage Explorer & Directory Layout -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2>
+            <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            HDFS Directory Layout &amp; Storage Partition Details
+          </h2>
+          <button class="btn btn-secondary" onclick="triggerParquetCompaction()">
+            <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Execute Parquet Compaction Job
+          </button>
+        </div>
+        <div class="panel-body">
+          <table class="enterprise-table">
+            <thead>
+              <tr>
+                <th>HDFS Path</th>
+                <th>Storage Layer</th>
+                <th>Format</th>
+                <th>Block Replication</th>
+                <th>Compression</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/lakehouse/turbofan/raw/year=2026/month=10/day=14/</code></td>
+                <td>Bronze / Streaming Ingestion</td>
+                <td>JSON Streaming Micro-batches</td>
+                <td>3x DataNode Replicas</td>
+                <td>None (Raw Stream)</td>
+                <td><span class="status-badge badge-HEALTHY">ACTIVE WRITE</span></td>
+              </tr>
+              <tr>
+                <td><code>/lakehouse/turbofan/compacted_20261014.parquet</code></td>
+                <td>Silver / Analytical Lakehouse</td>
+                <td>Columnar Parquet</td>
+                <td>3x DataNode Replicas</td>
+                <td>Snappy (72% Savings)</td>
+                <td><span class="status-badge badge-HEALTHY">COMPACTED</span></td>
+              </tr>
+              <tr>
+                <td><code>/lakehouse/turbofan/metadata/namenode_fsimage.json</code></td>
+                <td>Metadata Layer</td>
+                <td>JSON NameNode Ledger</td>
+                <td>Local Inode Mirror</td>
+                <td>None</td>
+                <td><span class="status-badge badge-HEALTHY">SYNCHRONIZED</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 4: BIG DATA ML PIPELINE & VERIFICATION VIEW -->
+    <div id="tab-ml-view" class="tab-content-section">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+        
+        <!-- Model Architecture & Accuracy Benchmarks -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>
+              <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              Dual-Model Architecture Benchmarks
+            </h2>
+            <span class="status-badge badge-HEALTHY">VERIFIED</span>
+          </div>
+          <div class="panel-body">
+            <table class="enterprise-table">
+              <thead>
+                <tr>
+                  <th>Model Task</th>
+                  <th>Algorithm</th>
+                  <th>Validation Metric</th>
+                  <th>Observed Score</th>
+                  <th>Benchmark Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>24-Hour Failure Classification</td>
+                  <td>HistGradientBoostingClassifier</td>
+                  <td>ROC-AUC Score</td>
+                  <td style="font-weight: 700; color: var(--status-normal-bar);">0.9967</td>
+                  <td><span class="status-badge badge-HEALTHY">EXCELLENT</span></td>
+                </tr>
+                <tr>
+                  <td>Classification Sensitivity</td>
+                  <td>HistGradientBoostingClassifier</td>
+                  <td>Recall @ 0.70 Threshold</td>
+                  <td style="font-weight: 700;">76.8%</td>
+                  <td><span class="status-badge badge-HEALTHY">HIGH CATCH RATE</span></td>
+                </tr>
+                <tr>
+                  <td>False Alarm Suppression</td>
+                  <td>HistGradientBoostingClassifier</td>
+                  <td>False Positive Rate</td>
+                  <td style="font-weight: 700; color: var(--status-normal-bar);">0.4%</td>
+                  <td><span class="status-badge badge-HEALTHY">MINIMAL NUISANCE</span></td>
+                </tr>
+                <tr>
+                  <td>Continuous RUL Estimation</td>
+                  <td>HistGradientBoostingRegressor</td>
+                  <td>Mean Absolute Error (MAE)</td>
+                  <td style="font-weight: 700;">31.6 Operating Cycles</td>
+                  <td><span class="status-badge badge-HEALTHY">OPTIMAL</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Key Degradation Feature Importances -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>
+              <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Top Big Data Degradation Features
+            </h2>
+            <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-muted);">
+              73 ROLLING WINDOW FEATURES
+            </span>
+          </div>
+          <div class="panel-body">
+            <table class="enterprise-table">
+              <thead>
+                <tr>
+                  <th>Feature Name</th>
+                  <th>Physical Subsystem</th>
+                  <th>Window Aggregation</th>
+                  <th>Model Importance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>sensor_11_mean_15</code></td>
+                  <td>HPC Static Pressure Ps30</td>
+                  <td>15-Cycle Rolling Mean</td>
+                  <td>28.4%</td>
+                </tr>
+                <tr>
+                  <td><code>sensor_9_mean_15</code></td>
+                  <td>Core Engine Speed Nc</td>
+                  <td>15-Cycle Rolling Mean</td>
+                  <td>22.1%</td>
+                </tr>
+                <tr>
+                  <td><code>sensor_4_mean_15</code></td>
+                  <td>LPT Coolant Temperature T50</td>
+                  <td>15-Cycle Rolling Mean</td>
+                  <td>17.6%</td>
+                </tr>
+                <tr>
+                  <td><code>sensor_15_mean_15</code></td>
+                  <td>Turbofan Bypass Ratio BPR</td>
+                  <td>15-Cycle Rolling Mean</td>
+                  <td>12.8%</td>
+                </tr>
+                <tr>
+                  <td><code>sensor_3_mean_15</code></td>
+                  <td>HPC Outlet Temperature T30</td>
+                  <td>15-Cycle Rolling Mean</td>
+                  <td>10.2%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Professional Toast Message Container -->
+  <div id="toast-container"></div>
+
+  <script>
+    let selectedEngineId = 1;
+    let fleetState = {};
+    let allWorkOrders = [];
+    let telemetryHistory = {
+      risk: [],
+      temp: [],
+      pressure: [],
+      speed: [],
+      cycles: []
+    };
+    const maxHistoryPoints = 35;
+
+    // Canvas 2D contexts
+    const ctxRisk = document.getElementById('chart-risk').getContext('2d');
+    const ctxTemp = document.getElementById('chart-temp').getContext('2d');
+    const ctxPressure = document.getElementById('chart-pressure').getContext('2d');
+
+    // Tab Navigation
+    function switchNavTab(tabId, btnElement) {
+      document.querySelectorAll('.tab-content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) {
+        target.classList.add('active');
+      }
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+    }
+
+    // Professional Toast Notification
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast-msg ${type}`;
+      toast.innerHTML = `
+        <div style="flex: 1;">
+          <div style="font-weight: 600; font-family: var(--font-mono); font-size: 0.72rem; color: #94a3b8; margin-bottom: 2px;">
+            [${new Date().toLocaleTimeString()}] SYSTEM TELEMETRY
+          </div>
+          <div>${message}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
+    // High-Precision Industrial Stripchart Renderer
+    function renderIndustrialChart(ctx, data, cycles, strokeColor, fillColor, baselineVal, minVal, maxVal, unit, yLabels) {
+      const w = ctx.canvas.width = ctx.canvas.parentElement.clientWidth - 16;
+      const h = ctx.canvas.height = 125;
+      ctx.clearRect(0, 0, w, h);
+
+      const padTop = 16;
+      const padBottom = 22;
+      const padLeft = 45; // Space for Y-axis numbers
+      const padRight = 15;
+      const chartW = w - padLeft - padRight;
+      const chartH = h - padTop - padBottom;
+
+      const min = (minVal !== undefined) ? minVal : (data.length ? Math.min(...data) : 0);
+      const max = (maxVal !== undefined) ? maxVal : (data.length ? Math.max(...data) : 100);
+      const range = (max - min) === 0 ? 1 : (max - min);
+
+      // Y-axis grid lines and labels
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#64748b";
+      ctx.font = "500 10px 'JetBrains Mono', monospace";
+      ctx.textAlign = "right";
+
+      const gridSteps = 3;
+      for (let i = 0; i <= gridSteps; i++) {
+        const y = padTop + (chartH / gridSteps) * i;
+        const valAtGrid = max - (range / gridSteps) * i;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(w - padRight, y);
+        ctx.stroke();
+
+        ctx.fillText(`${valAtGrid.toFixed(0)}${unit === '%' ? '%' : ''}`, padLeft - 6, y + 3);
+      }
+
+      // X-axis border
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.beginPath();
+      ctx.moveTo(padLeft, padTop + chartH);
+      ctx.lineTo(w - padRight, padTop + chartH);
+      ctx.stroke();
+
+      // Dashed Threshold Alarm Line (if applicable)
+      if (baselineVal !== undefined && baselineVal >= min && baselineVal <= max) {
+        const baseNormY = padTop + chartH - ((baselineVal - min) / range) * chartH;
+        ctx.strokeStyle = "#dc2626";
+        ctx.setLineDash([4, 4]);
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, baseNormY);
+        ctx.lineTo(w - padRight, baseNormY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = "#dc2626";
+        ctx.textAlign = "left";
+        ctx.fillText(`LIMIT: ${baselineVal}${unit}`, padLeft + 6, baseNormY - 4);
+      }
+
+      if (data.length < 2) return;
+
+      // Plot data line
+      const step = chartW / (data.length - 1);
+      ctx.beginPath();
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2;
+
+      data.forEach((val, i) => {
+        const x = padLeft + i * step;
+        const normY = padTop + chartH - ((val - min) / range) * chartH;
+        if (i === 0) ctx.moveTo(x, normY);
+        else ctx.lineTo(x, normY);
+      });
+      ctx.stroke();
+
+      // Subtle translucent fill
+      if (fillColor) {
+        const lastX = padLeft + (data.length - 1) * step;
+        ctx.lineTo(lastX, padTop + chartH);
+        ctx.lineTo(padLeft, padTop + chartH);
+        ctx.closePath();
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+
+      // Latest Value Numeric Readout Tag
+      const currentVal = data[data.length - 1];
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "600 11px 'JetBrains Mono', monospace";
+      ctx.textAlign = "right";
+      ctx.fillText(`${currentVal.toFixed(2)} ${unit}`, w - padRight, padTop - 3);
+
+      // X-axis cycle markers
+      if (cycles && cycles.length >= 2) {
+        ctx.fillStyle = "#64748b";
+        ctx.font = "500 10px 'JetBrains Mono', monospace";
+        ctx.textAlign = "left";
+        ctx.fillText(`Cycle ${cycles[0]}`, padLeft, h - 6);
+        ctx.textAlign = "right";
+        ctx.fillText(`Cycle ${cycles[cycles.length - 1]}`, w - padRight, h - 6);
+      }
+    }
+
+    // Connect Real-Time WebSocket
+    function connectWebSocket() {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws/telemetry`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        document.getElementById("kafka-status-txt").innerText = "Connected (Streaming)";
+        document.getElementById("kafka-dot").style.backgroundColor = "var(--status-normal-bar)";
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === "INITIAL_STATE") {
+            handleInitialState(msg.data);
+          } else if (msg.type === "TELEMETRY_UPDATE") {
+            handleTelemetryUpdate(msg.data);
+          }
+        } catch (e) {
+          console.error("Telemetry parse error:", e);
+        }
+      };
+
+      ws.onclose = () => {
+        document.getElementById("kafka-status-txt").innerText = "Reconnecting...";
+        document.getElementById("kafka-dot").style.backgroundColor = "var(--status-warning-bar)";
+        setTimeout(connectWebSocket, 2000);
+      };
+    }
+
+    function handleInitialState(data) {
+      updateFleetMetrics(data);
+      renderFleetCards(data.fleet || []);
+      fetchWorkOrders();
+      fetchHdfsStatus();
+    }
+
+    function handleTelemetryUpdate(data) {
+      fleetState[data.engine_id] = data;
+
+      if (data.engine_id === selectedEngineId) {
+        updateSelectedEngineDisplay(data);
+      }
+      updateEngineCardUI(data);
+
+      if (data.work_order_triggered) {
+        showToast(`Automated Work Order generated for Turbofan #${data.engine_id} (Failure Risk: ${(data.failure_probability_24h * 100).toFixed(1)}%)`, 'warning');
+        fetchWorkOrders();
+      }
+    }
+
+    function updateSelectedEngineDisplay(data) {
+      document.getElementById('current-engine-title').innerHTML = `
+        <svg viewBox="0 0 24 24" style="width:15px; height:15px; stroke:var(--text-muted); fill:none; stroke-width:2;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        Turbofan Unit #${data.engine_id} Diagnostics
+      `;
+
+      const riskPercent = (data.failure_probability_24h * 100).toFixed(1);
+      const riskEl = document.getElementById('disp-risk-val');
+      riskEl.innerText = `${riskPercent}%`;
+
+      if (data.failure_probability_24h >= 0.70) {
+        riskEl.style.color = "var(--status-critical-bar)";
+      } else if (data.failure_probability_24h >= 0.40) {
+        riskEl.style.color = "var(--status-warning-bar)";
+      } else {
+        riskEl.style.color = "var(--status-normal-bar)";
+      }
+
+      document.getElementById('disp-rul-val').innerText = `${data.predicted_rul_hours} hrs`;
+      document.getElementById('disp-cycle-val').innerText = `Cycle ${data.cycle}`;
+
+      const label = document.getElementById('selected-status-label');
+      label.innerText = data.health_status;
+      label.className = `status-badge badge-${data.health_status}`;
+
+      // Update Live Telemetry Table
+      const ks = data.key_sensors || {};
+      if (ks.T30_HPC_temp) {
+        document.getElementById('tbl-t30').innerText = `${ks.T30_HPC_temp.toFixed(2)} K`;
+        document.getElementById('tbl-t30-status').innerHTML = ks.T30_HPC_temp > 1600 ? 
+          '<span class="status-badge badge-CRITICAL">HIGH TEMP</span>' : '<span class="status-badge badge-HEALTHY">NORMAL</span>';
+      }
+      if (ks.T50_LPT_temp) {
+        document.getElementById('tbl-t50').innerText = `${ks.T50_LPT_temp.toFixed(2)} K`;
+        document.getElementById('tbl-t50-status').innerHTML = ks.T50_LPT_temp > 1420 ? 
+          '<span class="status-badge badge-WARNING">ELEVATED</span>' : '<span class="status-badge badge-HEALTHY">NORMAL</span>';
+      }
+      if (ks.P30_pressure) {
+        document.getElementById('tbl-p30').innerText = `${ks.P30_pressure.toFixed(2)} psia`;
+        document.getElementById('tbl-p30-status').innerHTML = ks.P30_pressure < 551 ? 
+          '<span class="status-badge badge-CRITICAL">PRESSURE DROP</span>' : '<span class="status-badge badge-HEALTHY">NORMAL</span>';
+      }
+      if (ks.Nc_core_speed) {
+        document.getElementById('tbl-nc').innerText = `${ks.Nc_core_speed.toFixed(1)} rpm`;
+        document.getElementById('tbl-nc-status').innerHTML = ks.Nc_core_speed < 9040 ? 
+          '<span class="status-badge badge-CRITICAL">CORE SLOWDOWN</span>' : '<span class="status-badge badge-HEALTHY">NORMAL</span>';
+      }
+      if (ks.Ps30_static_pressure) {
+        document.getElementById('tbl-ps30').innerText = `${ks.Ps30_static_pressure.toFixed(2)} psia`;
+        document.getElementById('tbl-ps30-status').innerHTML = ks.Ps30_static_pressure > 48.0 ? 
+          '<span class="status-badge badge-WARNING">BACKPRESSURE</span>' : '<span class="status-badge badge-HEALTHY">NORMAL</span>';
+      }
+      if (ks.BPR_bypass_ratio) {
+        document.getElementById('tbl-bpr').innerText = `${ks.BPR_bypass_ratio.toFixed(4)}`;
+        document.getElementById('tbl-bpr-status').innerHTML = ks.BPR_bypass_ratio > 8.52 ? 
+          '<span class="status-badge badge-WARNING">HIGH BYPASS</span>' : '<span class="status-badge badge-HEALTHY">NORMAL</span>';
+      }
+
+      // Push history
+      telemetryHistory.risk.push(data.failure_probability_24h * 100);
+      telemetryHistory.temp.push(ks.T30_HPC_temp || 1585);
+      telemetryHistory.pressure.push(ks.P30_pressure || 553);
+      telemetryHistory.speed.push(ks.Nc_core_speed || 9050);
+      telemetryHistory.cycles.push(data.cycle);
+
+      if (telemetryHistory.risk.length > maxHistoryPoints) {
+        telemetryHistory.risk.shift();
+        telemetryHistory.temp.shift();
+        telemetryHistory.pressure.shift();
+        telemetryHistory.speed.shift();
+        telemetryHistory.cycles.shift();
+      }
+
+      // Render Charts
+      document.getElementById('chart-legend-risk').innerText = `Current: ${riskPercent}% | Threshold: 70.0%`;
+      renderIndustrialChart(ctxRisk, telemetryHistory.risk, telemetryHistory.cycles, "#dc2626", "rgba(254, 226, 226, 0.4)", 70, 0, 100, "%");
+      renderIndustrialChart(ctxTemp, telemetryHistory.temp, telemetryHistory.cycles, "#d97706", "rgba(254, 243, 199, 0.4)", 1600, 1575, 1625, "K");
+      renderIndustrialChart(ctxPressure, telemetryHistory.pressure, telemetryHistory.cycles, "#1e40af", "rgba(239, 246, 255, 0.4)", 551, 547, 558, "psia");
+    }
+
+    function selectEngine(id) {
+      selectedEngineId = id;
+      document.querySelectorAll('.asset-card').forEach(el => {
+        el.classList.toggle('active', parseInt(el.dataset.id) === id);
+      });
+
+      telemetryHistory = { risk: [], temp: [], pressure: [], speed: [], cycles: [] };
+      fetch(`/api/fleet/${id}/history`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.history) {
+            res.history.forEach(item => {
+              telemetryHistory.risk.push(item.failure_probability_24h * 100);
+              telemetryHistory.temp.push(item.key_sensors.T30_HPC_temp || 1585);
+              telemetryHistory.pressure.push(item.key_sensors.P30_pressure || 553);
+              telemetryHistory.speed.push(item.key_sensors.Nc_core_speed || 9050);
+              telemetryHistory.cycles.push(item.cycle);
+            });
+            if (res.history.length > 0) {
+              updateSelectedEngineDisplay(res.history[res.history.length - 1]);
+            }
+          }
+        });
+    }
+
+    function renderFleetCards(fleet) {
+      const container = document.getElementById('fleet-container');
+      container.innerHTML = '';
+      fleet.forEach(eng => {
+        fleetState[eng.engine_id] = eng;
+        const card = document.createElement('div');
+        card.className = `asset-card ${eng.engine_id === selectedEngineId ? 'active' : ''}`;
+        card.dataset.id = eng.engine_id;
+        card.onclick = () => selectEngine(eng.engine_id);
+
+        const riskPct = (eng.failure_probability_24h * 100).toFixed(0);
+        const fillCol = eng.health_status === 'CRITICAL' ? 'var(--status-critical-bar)' : 
+                       (eng.health_status === 'WARNING' ? 'var(--status-warning-bar)' : 'var(--status-normal-bar)');
+
+        card.innerHTML = `
+          <div class="asset-card-top">
+            <span class="asset-title">Turbofan #${eng.engine_id} (CFM56)</span>
+            <span class="status-badge badge-${eng.health_status}">${eng.health_status}</span>
+          </div>
+          <div class="asset-metrics-row">
+            <span>Cycle: ${eng.cycle}</span>
+            <span>RUL: ${eng.predicted_rul_hours} hrs</span>
+            <span>Risk: ${riskPct}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: ${riskPct}%; background-color: ${fillCol};"></div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      if (fleet.length > 0 && !telemetryHistory.risk.length) {
+        selectEngine(fleet[0].engine_id);
+      }
+    }
+
+    function updateEngineCardUI(data) {
+      const card = document.querySelector(`.asset-card[data-id="${data.engine_id}"]`);
+      if (!card) return;
+
+      const riskPct = (data.failure_probability_24h * 100).toFixed(0);
+      const fillCol = data.health_status === 'CRITICAL' ? 'var(--status-critical-bar)' : 
+                     (data.health_status === 'WARNING' ? 'var(--status-warning-bar)' : 'var(--status-normal-bar)');
+
+      const badge = card.querySelector('.status-badge');
+      badge.className = `status-badge badge-${data.health_status}`;
+      badge.innerText = data.health_status;
+
+      card.querySelector('.asset-metrics-row').innerHTML = `
+        <span>Cycle: ${data.cycle}</span>
+        <span>RUL: ${data.predicted_rul_hours} hrs</span>
+        <span>Risk: ${riskPct}%</span>
+      `;
+      const fill = card.querySelector('.progress-fill');
+      fill.style.width = `${riskPct}%`;
+      fill.style.backgroundColor = fillCol;
+    }
+
+    function updateFleetMetrics(data) {
+      document.getElementById('stat-total-engines').innerText = data.total_engines_monitored || '5';
+      document.getElementById('stat-healthy-engines').innerText = data.healthy_engines || '0';
+      document.getElementById('stat-warning-engines').innerText = data.warning_engines || '0';
+      document.getElementById('stat-critical-engines').innerText = data.critical_engines || '0';
+      if (data.hdfs_status) {
+        document.getElementById('stat-hdfs-records').innerText = data.hdfs_status.total_records_ingested || '0';
+      }
+    }
+
+    function fetchWorkOrders() {
+      fetch('/api/work-orders')
+        .then(r => r.json())
+        .then(orders => {
+          allWorkOrders = orders || [];
+          const openOrders = allWorkOrders.filter(o => o.status === 'OPEN' || o.status === 'IN_PROGRESS');
+          
+          document.getElementById('stat-wo-active').innerText = openOrders.length;
+          document.getElementById('badge-wo-count').innerText = `${openOrders.length} ACTIVE`;
+          document.getElementById('tab-wo-count').innerText = allWorkOrders.length;
+
+          // Render right side SCADA queue
+          const container = document.getElementById('work-orders-container');
+          if (openOrders.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                No critical failure work orders active. All equipment within safe operational parameters.
+              </div>
+            `;
+          } else {
+            container.innerHTML = openOrders.map(wo => `
+              <div class="wo-card ${wo.severity}">
+                <div class="wo-card-top">
+                  <span class="wo-code">${wo.work_order_id}</span>
+                  <span class="status-badge badge-${wo.severity}">${wo.severity}</span>
+                </div>
+                <div class="wo-equipment-name">${wo.asset_name} [Cycle ${wo.latest_cycle}]</div>
+                <div class="wo-details-row">
+                  <span>Risk: ${(wo.latest_failure_prob * 100).toFixed(1)}%</span>
+                  <span>RUL: ${wo.predicted_remaining_hours} hrs</span>
+                  <span>Status: <strong>${wo.status}</strong></span>
+                </div>
+                <ul class="wo-diagnostics-box">
+                  ${wo.primary_degradation_indicators.map(ind => `<li>${ind}</li>`).join('')}
+                </ul>
+                <div class="wo-footer-actions">
+                  ${wo.status === 'OPEN' ? `
+                    <button class="btn btn-primary btn-sm" onclick="updateWoStatus('${wo.work_order_id}', 'IN_PROGRESS')">
+                      Dispatch Crew
+                    </button>
+                  ` : `
+                    <button class="btn btn-sm" style="background-color:var(--status-normal-bar); color:#ffffff; border-color:var(--status-normal-bar);" onclick="updateWoStatus('${wo.work_order_id}', 'COMPLETED')">
+                      Mark Resolved
+                    </button>
+                  `}
+                </div>
+              </div>
+            `).join('');
+          }
+
+          // Render Full Table (Tab 2)
+          renderFullWorkOrderTable(allWorkOrders);
+        });
+    }
+
+    function renderFullWorkOrderTable(orders) {
+      const tbody = document.getElementById('full-wo-table-body');
+      if (!orders || orders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+              No work order tickets generated yet.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = orders.map(wo => `
+        <tr>
+          <td><strong style="font-family: var(--font-mono); color: var(--brand-primary);">${wo.work_order_id}</strong></td>
+          <td><strong>${wo.asset_name}</strong></td>
+          <td style="font-family: var(--font-mono);">Cycle ${wo.latest_cycle}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; color: ${wo.latest_failure_prob >= 0.7 ? 'var(--status-critical-bar)' : 'var(--status-warning-bar)'}">
+            ${(wo.latest_failure_prob * 100).toFixed(1)}%
+          </td>
+          <td style="font-family: var(--font-mono);">${wo.predicted_remaining_hours} hrs</td>
+          <td style="font-size: 0.72rem; color: var(--text-secondary); max-width: 320px;">
+            ${wo.primary_degradation_indicators.join(' • ')}
+          </td>
+          <td>${wo.assigned_technician || 'Plant Maintenance Team'}</td>
+          <td>
+            <span class="status-badge ${wo.status === 'COMPLETED' ? 'badge-HEALTHY' : (wo.status === 'IN_PROGRESS' ? 'badge-WARNING' : 'badge-CRITICAL')}">
+              ${wo.status}
+            </span>
+          </td>
+          <td>
+            ${wo.status === 'OPEN' ? `
+              <button class="btn btn-primary btn-sm" onclick="updateWoStatus('${wo.work_order_id}', 'IN_PROGRESS')">Dispatch</button>
+            ` : (wo.status === 'IN_PROGRESS' ? `
+              <button class="btn btn-sm" style="background-color:var(--status-normal-bar); color:#ffffff; border-color:var(--status-normal-bar);" onclick="updateWoStatus('${wo.work_order_id}', 'COMPLETED')">Complete</button>
+            ` : `<span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">RESOLVED</span>`)}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateWoStatus(id, newStatus) {
+      fetch(`/api/work-orders/${id}/status`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: newStatus, technician: "On-Duty Turbomachinery Lead" })
+      })
+      .then(r => r.json())
+      .then(() => {
+        showToast(`Work Order ${id} transitioned to ${newStatus}`, 'success');
+        fetchWorkOrders();
+      });
+    }
+
+    function fetchHdfsStatus() {
+      fetch('/api/hdfs/status')
+        .then(r => r.json())
+        .then(res => {
+          document.getElementById('hdfs-cluster-id').innerText = res.cluster_id || 'CID-TURBOFAN-PROD-01';
+          document.getElementById('hdfs-storage-size').innerText = `${res.physical_storage_mb || 0} MB`;
+          document.getElementById('hdfs-records-ingested').innerText = res.total_records_ingested || '0';
+          document.getElementById('stat-hdfs-records').innerText = res.total_records_ingested || '0';
+        });
+    }
+
+    function injectFaultAnomaly() {
+      fetch('/api/stream/inject-fault', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ engine_id: selectedEngineId })
+      })
+      .then(r => r.json())
+      .then(res => {
+        showToast(`Thermal degradation anomaly injected for Unit #${selectedEngineId}. Work order triggered.`, 'error');
+        fetchWorkOrders();
+      });
+    }
+
+    function triggerParquetCompaction() {
+      fetch('/api/hdfs/compact', { method: 'POST' })
+        .then(r => r.json())
+        .then(res => {
+          showToast(`HDFS micro-batches compacted to columnar Snappy Parquet: ${res.target_file}`, 'success');
+          fetchHdfsStatus();
+        });
+    }
+
+    // Initialize
+    connectWebSocket();
+    setInterval(fetchHdfsStatus, 10000);
+    setInterval(fetchWorkOrders, 6000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+{
+  "WO-ENG01-CYC185-202610140638": {
+    "work_order_id": "WO-ENG01-CYC185-202610140638",
+    "engine_id": 1,
+    "asset_name": "Turbofan CFM-Engine #1",
+    "created_cycle": 185,
+    "latest_cycle": 19,
+    "failure_probability": 0.9227,
+    "latest_failure_prob": 0.9453,
+    "predicted_remaining_hours": 29.9,
+    "severity": "CRITICAL",
+    "status": "IN_PROGRESS",
+    "primary_degradation_indicators": [
+      "HPC Outlet Temp T30 elevated (1612.4 K vs baseline 1585 K)",
+      "HPC Outlet Pressure P30 drop (549.5 psia vs baseline 554 psia)",
+      "Physical Core Speed Nc loss (9028.0 rpm vs baseline 9060 rpm)",
+      "Bypass Ratio BPR anomalous drift (8.580 vs baseline 8.42)"
+    ],
+    "recommended_actions": [
+      "Perform immediate borescope inspection on High-Pressure Compressor (HPC) stage 3-5",
+      "Verify cooling air bleed valve W31 and thermocouple calibration",
+      "Schedule turbine replacement / overhaul before cycle 214"
+    ],
+    "assigned_technician": "Turbomachinery Lead Sarah T.",
+    "created_at": "2026-10-14T06:38:31.855046+00:00",
+    "updated_at": "2026-10-14T13:49:35.853373+00:00",
+    "latest_predicted_rul": 22.8
+  },
+  "WO-ENG05-CYC171-202610140642": {
+    "work_order_id": "WO-ENG05-CYC171-202610140642",
+    "engine_id": 5,
+    "asset_name": "Turbofan CFM-Engine #5",
+    "created_cycle": 171,
+    "latest_cycle": 19,
+    "failure_probability": 0.744,
+    "latest_failure_prob": 0.7755,
+    "predicted_remaining_hours": 26.7,
+    "severity": "HIGH",
+    "status": "COMPLETED",
+    "primary_degradation_indicators": [
+      "HPC Outlet Temp T30 elevated (1596.3 K vs baseline 1585 K)",
+      "Physical Core Speed Nc loss (9044.5 rpm vs baseline 9060 rpm)",
+      "Bypass Ratio BPR anomalous drift (8.489 vs baseline 8.42)"
+    ],
+    "recommended_actions": [
+      "Perform immediate borescope inspection on High-Pressure Compressor (HPC) stage 3-5",
+      "Verify cooling air bleed valve W31 and thermocouple calibration",
+      "Schedule turbine replacement / overhaul before cycle 197"
+    ],
+    "assigned_technician": "On-Duty Turbomachinery Lead",
+    "created_at": "2026-10-14T06:42:46.971469+00:00",
+    "updated_at": "2026-10-14T13:47:04.326575+00:00",
+    "latest_predicted_rul": 73.1
+  },
+  "WO-ENG03-CYC185-202610141347": {
+    "work_order_id": "WO-ENG03-CYC185-202610141347",
+    "engine_id": 3,
+    "asset_name": "Turbofan CFM-Engine #3",
+    "created_cycle": 185,
+    "latest_cycle": 4,
+    "failure_probability": 0.9535,
+    "latest_failure_prob": 0.9663,
+    "predicted_remaining_hours": 20.9,
+    "severity": "CRITICAL",
+    "status": "OPEN",
+    "primary_degradation_indicators": [
+      "HPC Outlet Temp T30 elevated (1612.4 K vs baseline 1585 K)",
+      "HPC Outlet Pressure P30 drop (549.5 psia vs baseline 554 psia)",
+      "Physical Core Speed Nc loss (9028.0 rpm vs baseline 9060 rpm)",
+      "Bypass Ratio BPR anomalous drift (8.580 vs baseline 8.42)"
+    ],
+    "recommended_actions": [
+      "Perform immediate borescope inspection on High-Pressure Compressor (HPC) stage 3-5",
+      "Verify cooling air bleed valve W31 and thermocouple calibration",
+      "Schedule turbine replacement / overhaul before cycle 205"
+    ],
+    "assigned_technician": "Turbomachinery Rapid Response Team",
+    "created_at": "2026-10-14T13:47:08.379861+00:00",
+    "updated_at": "2026-10-14T13:47:43.595224+00:00",
+    "latest_predicted_rul": 16.3
+  },
+  "WO-ENG05-CYC171-202610141347": {
+    "work_order_id": "WO-ENG05-CYC171-202610141347",
+    "engine_id": 5,
+    "asset_name": "Turbofan CFM-Engine #5",
+    "created_cycle": 171,
+    "latest_cycle": 19,
+    "failure_probability": 0.744,
+    "latest_failure_prob": 0.7755,
+    "predicted_remaining_hours": 26.7,
+    "severity": "HIGH",
+    "status": "OPEN",
+    "primary_degradation_indicators": [
+      "HPC Outlet Temp T30 elevated (1596.3 K vs baseline 1585 K)",
+      "Physical Core Speed Nc loss (9044.5 rpm vs baseline 9060 rpm)",
+      "Bypass Ratio BPR anomalous drift (8.489 vs baseline 8.42)"
+    ],
+    "recommended_actions": [
+      "Perform immediate borescope inspection on High-Pressure Compressor (HPC) stage 3-5",
+      "Verify cooling air bleed valve W31 and thermocouple calibration",
+      "Schedule turbine replacement / overhaul before cycle 197"
+    ],
+    "assigned_technician": "Turbomachinery Rapid Response Team",
+    "created_at": "2026-10-14T13:47:40.306498+00:00",
+    "updated_at": "2026-10-14T13:54:46.580630+00:00",
+    "latest_predicted_rul": 73.1
+  }
+}
